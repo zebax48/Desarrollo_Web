@@ -1,43 +1,45 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import Calculator from '../components/Calculator';
 import styles from '../styles/calculator.module.css';
 
 export default function Home() {
-  const [numero1, setNumero1] = useState('');
-  const [numero2, setNumero2] = useState('');
   const [resultado, setResultado] = useState(null);
+  const [historial, setHistorial] = useState([]);
 
-  const sumarNumeros = () => {
-    const num1 = parseFloat(numero1);
-    const num2 = parseFloat(numero2);
-    if (!isNaN(num1) && !isNaN(num2)) {
-      setResultado(num1 + num2);
-    } else {
-      setResultado('Por favor ingrese números válidos');
+  const manejarOnResult = (objeto) => {
+    setResultado(objeto.res);
+    setHistorial((prev) => [...prev, objeto]);
+  }
+
+  const changeOp = (op) => {
+    switch (op) {
+      case 'sumar' : return '+';
+      case 'restar' : return '-';
+      case 'multiplicar' : return '*';
+      case 'dividir' : return '/';
+      default: return '';
     }
-  };
+  }
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.header}>Suma de dos números</h1>
-      <input
-        type="number"
-        placeholder="Ingresa el primer número"
-        value={numero1}
-        onChange={(e) => setNumero1(e.target.value)}
-        className={styles.input}
+      <Calculator 
+        titulo="Mi calculadora personalizada"
+        onResult={manejarOnResult}
       />
-      <input
-        type="number"
-        placeholder="Ingresa el segundo número"
-        value={numero2}
-        onChange={(e) => setNumero2(e.target.value)}
-        className={styles.input}
-      />
-      <button onClick={sumarNumeros} className={styles.button}>
-        Sumar
-      </button>
-      {resultado !== null && (
+      {resultado != null && (
         <p className={styles.resultado}>Resultado: {resultado}</p>
+      )}
+
+      {historial.length > 0 && (
+        <div className={styles.container}>
+          <h2 className={styles.header}>Historial</h2>
+          <ul>
+            {historial.map((item, index) => (
+              <li key={index}>#{index + 1}: {item.num1} {changeOp(item.operacion)} {item.num2} = {item.res}</li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
